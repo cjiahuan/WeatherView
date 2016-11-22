@@ -7,4 +7,8 @@
     android:layout_height="match_parent"
     tools:context="cjh.weatherview.MainActivity">
 
+    <cjh.weatherviewlibarary.WeatherView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </RelativeLayout>
