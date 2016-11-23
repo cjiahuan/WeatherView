@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WeatherView">
+        <attr name="txtSize" format="dimension"></attr>
+        <attr name="dotRadiu" format="dimension"></attr>
+        <attr name="todayDotRadiu" format="dimension"></attr>
+        <attr name="dotColor" format="color"></attr>
+        <attr name="highDotColor" format="color"></attr>
+        <attr name="lowDotColor" format="color"></attr>
+        <attr name="lineStrokWidth" format="dimension"></attr>
+        <attr name="txtToBorder" format="dimension"></attr>
+        <attr name="txtToDot" format="dimension"></attr>
+        <attr name="txtColor" format="color"></attr>
+        <attr name="highTxtColor" format="color"></attr>
+        <attr name="lowTxtColor" format="color"></attr>
+        <attr name="lineColor" format="color"></attr>
+        <attr name="highLineColor" format="color"></attr>
+        <attr name="lowLineColor" format="color"></attr>
+        <attr name="width" format="dimension"></attr>
+        <attr name="height" format="dimension"></attr>
+        <attr name="backgroundColor" format="color"></attr>
+    </declare-styleable>
+</resources>
