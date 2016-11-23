@@ -5,8 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.nfc.Tag;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import java.util.List;
  */
 
 public class WeatherView<T extends BaseWeatherData> extends View {
+
+    private static final String TAG = "WeatherView";
 
     protected Context context;
 
@@ -67,7 +71,9 @@ public class WeatherView<T extends BaseWeatherData> extends View {
 
     protected Paint.FontMetrics fontMetrics;
 
-    protected int highestDegree, lowestDegree;
+    protected int highestDegree = 1;
+
+    protected int lowestDegree = -1;
 
     protected int degreeTextSize = DEGREETEXTSIZE;
 
@@ -94,10 +100,16 @@ public class WeatherView<T extends BaseWeatherData> extends View {
 
     private List<T> datas = new ArrayList();
 
-    private void setDatas(List<T> datas, int highestDegree, int lowestDegree) {
+    public void setW(int width) {
+        this.width = width;
+        this.height = width / 5 * 8;
+    }
+
+    public void setDatas(List<T> datas, int highestDegree, int lowestDegree, int currentPosition) {
         this.datas = datas;
         this.highestDegree = highestDegree;
         this.lowestDegree = lowestDegree;
+        this.currentPosition = currentPosition;
         postInvalidate();
     }
 
@@ -149,9 +161,9 @@ public class WeatherView<T extends BaseWeatherData> extends View {
             result = size;
         else {
             if (type == 0)
-                result = dip2px(width) + getPaddingLeft() + getPaddingRight();
+                result = width + getPaddingLeft() + getPaddingRight();
             else
-                result = dip2px(height) + getPaddingBottom() + getPaddingTop();
+                result = height + getPaddingBottom() + getPaddingTop();
 
             if (sizeMode == MeasureSpec.AT_MOST)
                 result = Math.min(size, result);
@@ -160,7 +172,7 @@ public class WeatherView<T extends BaseWeatherData> extends View {
         return result;
     }
 
-    private int baseY, degreeHeight, pxDegreeTextSize;
+    private int baseY, degreeHeight;
     private int w, h;
 
     @Override
@@ -171,21 +183,34 @@ public class WeatherView<T extends BaseWeatherData> extends View {
         w = getWidth();
         h = getHeight();
         baseY = dip2px(distanceTxtToBorder + distanceBetweenTxtDot) + sp2px(degreeTextSize);
-        int baseHeight = w - 2 * baseY;
+        int baseHeight = h - 2 * baseY;
+        if (highestDegree == lowestDegree) {
+            Log.e(TAG, "最高温 和 最低温 居然一样：highestDegree = lowestDegree ！！！！");
+            return;
+        }
         degreeHeight = baseHeight / (highestDegree - lowestDegree);
         T t = datas.get(currentPosition);
-        if (currentPosition == 0 && currentPosition < datas.size() - 1) {
+
+        Point[] middlePoints = getMiddlePoints(t);
+        canvas.drawCircle(middlePoints[0].x, middlePoints[0].y, dip2px(weaDotRadiu), dotPaint);
+        canvas.drawCircle(middlePoints[1].x, middlePoints[1].y, dip2px(weaDotRadiu), dotPaint);
+
+        Point[] txtBaseLinePoints = getTxtBaseLinePoint(t, middlePoints);
+        canvas.drawText(t.highDegree + "", txtBaseLinePoints[0].x, txtBaseLinePoints[0].y, txtPaint);
+        canvas.drawText(t.lowDegree + "", txtBaseLinePoints[1].x, txtBaseLinePoints[1].y, txtPaint);
+
+        if (currentPosition > 0) {
+            T preT = datas.get(currentPosition - 1);
+            Point[] leftPoints = getLeftPoints(t, preT);
+            canvas.drawLine(middlePoints[0].x, middlePoints[0].y, leftPoints[0].x, leftPoints[0].y, linePaint);
+            canvas.drawLine(middlePoints[1].x, middlePoints[1].y, leftPoints[1].x, leftPoints[1].y, linePaint);
+        }
+
+        if (currentPosition < datas.size() - 1) {
             T nextT = datas.get(currentPosition + 1);
-
-        } else if (currentPosition == datas.size() - 1) {
-            if (datas.size() > 1) {
-                T preT = datas.get(currentPosition - 1);
-
-            } else {
-
-            }
-        } else {
-
+            Point[] rightPoints = getRightPoints(t, nextT);
+            canvas.drawLine(middlePoints[0].x, middlePoints[0].y, rightPoints[0].x, rightPoints[0].y, linePaint);
+            canvas.drawLine(middlePoints[1].x, middlePoints[1].y, rightPoints[1].x, rightPoints[1].y, linePaint);
         }
     }
 
@@ -227,8 +252,20 @@ public class WeatherView<T extends BaseWeatherData> extends View {
         return points;
     }
 
-    private Point[] getTxtBaseLinePoint(Point[] points) {
-        
+    private Point[] getTxtBaseLinePoint(T t, Point[] middlePoints) {
+        Point[] baseLinePoints = new Point[2];
+        Point middelHighPoint = middlePoints[0];
+        int disY = dip2px(weaDotRadiu) / 2 + dip2px(distanceBetweenTxtDot);
+        int highBaseLineY = middelHighPoint.y - disY;
+        int highBaseLineX = (w - (int) txtPaint.measureText(t.highDegree + "")) / 2;
+        Point highBaseLinePoint = new Point(highBaseLineX, highBaseLineY);
+        Point middleLowPoint = middlePoints[1];
+        int lowBaseLineY = middleLowPoint.y + disY + sp2px(degreeTextSize);
+        int lowBaseLineX = (w - (int) txtPaint.measureText(t.lowDegree + "")) / 2;
+        Point lowBaseLinePoint = new Point(lowBaseLineX, lowBaseLineY);
+        baseLinePoints[0] = highBaseLinePoint;
+        baseLinePoints[1] = lowBaseLinePoint;
+        return baseLinePoints;
     }
 
 
