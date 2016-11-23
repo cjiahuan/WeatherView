@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.nfc.Tag;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -191,31 +190,31 @@ public class WeatherView<T extends BaseWeatherData> extends View {
         degreeHeight = baseHeight / (highestDegree - lowestDegree);
         T t = datas.get(currentPosition);
 
-        Point[] middlePoints = getMiddlePoints(t);
-        canvas.drawCircle(middlePoints[0].x, middlePoints[0].y, dip2px(weaDotRadiu), dotPaint);
-        canvas.drawCircle(middlePoints[1].x, middlePoints[1].y, dip2px(weaDotRadiu), dotPaint);
+        Point[] tPoints = getTPoints(t);
+        canvas.drawCircle(tPoints[0].x, tPoints[0].y, dip2px(weaDotRadiu), dotPaint);
+        canvas.drawCircle(tPoints[1].x, tPoints[1].y, dip2px(weaDotRadiu), dotPaint);
 
-        Point[] txtBaseLinePoints = getTxtBaseLinePoint(t, middlePoints);
+        Point[] txtBaseLinePoints = getTxtBaseLinePoint(t, tPoints);
         canvas.drawText(t.highDegree + "", txtBaseLinePoints[0].x, txtBaseLinePoints[0].y, txtPaint);
         canvas.drawText(t.lowDegree + "", txtBaseLinePoints[1].x, txtBaseLinePoints[1].y, txtPaint);
 
         if (currentPosition > 0) {
             T preT = datas.get(currentPosition - 1);
-            Point[] leftPoints = getLeftPoints(t, preT);
-            canvas.drawLine(middlePoints[0].x, middlePoints[0].y, leftPoints[0].x, leftPoints[0].y, linePaint);
-            canvas.drawLine(middlePoints[1].x, middlePoints[1].y, leftPoints[1].x, leftPoints[1].y, linePaint);
+            Point[] leftPoints = getLeftPoints(tPoints, preT);
+            canvas.drawLine(tPoints[0].x, tPoints[0].y, leftPoints[0].x, leftPoints[0].y, linePaint);
+            canvas.drawLine(tPoints[1].x, tPoints[1].y, leftPoints[1].x, leftPoints[1].y, linePaint);
         }
 
         if (currentPosition < datas.size() - 1) {
             T nextT = datas.get(currentPosition + 1);
-            Point[] rightPoints = getRightPoints(t, nextT);
-            canvas.drawLine(middlePoints[0].x, middlePoints[0].y, rightPoints[0].x, rightPoints[0].y, linePaint);
-            canvas.drawLine(middlePoints[1].x, middlePoints[1].y, rightPoints[1].x, rightPoints[1].y, linePaint);
+            Point[] rightPoints = getRightPoints(tPoints, nextT);
+            canvas.drawLine(tPoints[0].x, tPoints[0].y, rightPoints[0].x, rightPoints[0].y, linePaint);
+            canvas.drawLine(tPoints[1].x, tPoints[1].y, rightPoints[1].x, rightPoints[1].y, linePaint);
         }
     }
 
 
-    private Point[] getMiddlePoints(T t) {
+    private Point[] getTPoints(T t) {
         Point[] points = new Point[2];
         int highY = baseY + dip2px(weaDotRadiu) / 2 + (highestDegree - t.highDegree) * degreeHeight;
         Point highPoint = new Point(w / 2, highY);
@@ -226,29 +225,19 @@ public class WeatherView<T extends BaseWeatherData> extends View {
         return points;
     }
 
-    private Point[] getLeftPoints(T t, T preT) {
+    private Point[] getLeftPoints(Point[] tPoints, T preT) {
         Point[] points = new Point[2];
-        int leftHighDegree = (t.highDegree + preT.highDegree) / 2;
-        int leftLowDegree = (t.lowDegree + preT.lowDegree) / 2;
-        int leftHighY = baseY + dip2px(weaDotRadiu) / 2 + (highestDegree - leftHighDegree) * degreeHeight;
-        Point leftHighPoint = new Point(0, leftHighY);
-        int leftLowY = leftHighY + (leftHighDegree - leftLowDegree) * degreeHeight;
-        Point leftLowPoint = new Point(0, leftLowY);
-        points[0] = leftHighPoint;
-        points[1] = leftLowPoint;
+        Point[] preTPoints = getTPoints(preT);
+        points[0] = new Point(0, (tPoints[0].y + preTPoints[0].y) / 2);
+        points[1] = new Point(0, (tPoints[1].y + preTPoints[1].y) / 2);
         return points;
     }
 
-    private Point[] getRightPoints(T t, T nextT) {
+    private Point[] getRightPoints(Point[] tPoints, T nextT) {
         Point[] points = new Point[2];
-        int rightHighDegree = (t.highDegree + nextT.highDegree) / 2;
-        int rightLowDegree = (t.lowDegree + nextT.lowDegree) / 2;
-        int rightHighY = baseY + dip2px(weaDotRadiu) / 2 + (highestDegree - rightHighDegree) * degreeHeight;
-        Point rightHighPoint = new Point(w, rightHighY);
-        int rightLowY = rightHighY + (rightHighDegree - rightLowDegree) * degreeHeight;
-        Point rightLowPoint = new Point(w, rightLowY);
-        points[0] = rightHighPoint;
-        points[1] = rightLowPoint;
+        Point[] nextTPoints = getTPoints(nextT);
+        points[0] = new Point(w, (tPoints[0].y + nextTPoints[0].y) / 2);
+        points[1] = new Point(w, (tPoints[1].y + nextTPoints[1].y) / 2);
         return points;
     }
 
