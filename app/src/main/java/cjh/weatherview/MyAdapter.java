@@ -35,7 +35,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.weatherView.setW(weatherViewW);
         holder.weatherView.setDatas(datas, highestDegree, lowestDegree, position);
     }
 
