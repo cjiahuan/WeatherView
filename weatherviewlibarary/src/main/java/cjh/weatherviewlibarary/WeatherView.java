@@ -24,8 +24,8 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
 
     protected Context context;
 
-    //分别是 圆点 文字 线 的画笔
-    protected Paint dotPaint, txtPaint, linePaint;
+    //分别是 圆点 文字 线 的画笔 中间线的画笔
+    protected Paint dotPaint, txtPaint, linePaint, middleLinePaint;
 
     // 默认的高度 dp
     protected static final int DEFAULT_TMINHEIGHT = 100;
@@ -67,6 +67,11 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
     // 低温字体颜色
     protected static final int LOWTXTCOLOR = Color.BLACK;
 
+    // 中间线的颜色
+    protected static final int MIDDLE_LINE_COLOR = 0x33ff0000;
+
+    protected static final int MIDDLE_LINE_STROKE_WIDTH = 1;
+
     private DisplayMetrics dm;
 
     protected Paint.FontMetrics fontMetrics;
@@ -82,6 +87,10 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
     protected int highTXTColor = HIGHTXTCOLOR;
 
     protected int lowTXTColor = LOWTXTCOLOR;
+
+    private int todayHighTxtColor = HIGHTXTCOLOR;
+
+    private int todayLowTxtColor = LOWTXTCOLOR;
 
     protected int txtToDot = -1;
 
@@ -103,7 +112,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
 
     protected int rightLowLineColor = -1;
 
-    protected int dotColor;
+    protected int dotColor = -1;
 
     protected int highDotColor = HIGHDOTCOLOR;
 
@@ -125,6 +134,12 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
     protected int width = -1;
 
     protected boolean haveMiddleLine;
+
+    protected int middleLineColor = MIDDLE_LINE_COLOR;
+
+    protected int middleLineStrokeWidth = MIDDLE_LINE_STROKE_WIDTH;
+
+    protected boolean isToday;
 
     protected List<T> datas = new ArrayList();
 
@@ -158,7 +173,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attrs) {
+    protected void init(Context context, AttributeSet attrs) {
         this.context = context;
         if (attrs != null)
             initAttrs(attrs);
@@ -170,7 +185,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
     /**
      * 根据属性的优先级，设置冲突的属性
      */
-    private void setUpAttr() {
+    protected void setUpAttr() {
         if (txtSize == -1)
             txtSize = sp2px(TXTSIZE);
         if (dotRadiu == -1)
@@ -182,26 +197,39 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         if (txtToDot == -1)
             txtToDot = dip2px(TXTTODOT);
         if (txtToBorder == -1)
-            txtToBorder = dip2px(txtToBorder);
+            txtToBorder = dip2px(TXTTOBORDER);
         if (width == -1)
             width = dip2px(DEFAULT_MINWIDTH);
         if (height == -1)
             height = dip2px(DEFAULT_TMINHEIGHT);
         if (dotColor != -1)
-            highDotColor = lowDotColor = dotColor;
+            highDotColor = lowDotColor = dotColor = HIGHDOTCOLOR;
         if (todayHighDotColor == -1 || todayLowDotColor == -1)
             todayHighDotColor = todayLowDotColor = HIGHDOTCOLOR;
         if (txtColor != -1)
-            highTXTColor = lowTXTColor = txtColor;
+            highTXTColor = lowTXTColor = txtColor = HIGHTXTCOLOR;
         if (lineColor != -1)
             highLineColor = lowLineColor = lineColor;
         if (leftHighLineColor == -1 || rightHighLineColor == -1)
             leftHighLineColor = rightHighLineColor = highLineColor;
         if (leftLowLineColor == -1 || rightLowLineColor == -1)
             leftLowLineColor = rightLowLineColor = lowLineColor;
+        if (isToday) {
+            highDotColor = todayHighDotColor;
+            lowDotColor = todayLowDotColor;
+            highTXTColor = todayHighTxtColor;
+            lowTXTColor = todayLowTxtColor;
+            dotRadiu = todayDotRadiu;
+        }
+
     }
 
-    private void initAttrs(AttributeSet attrs) {
+    /**
+     * 初始化XML属性
+     *
+     * @param attrs
+     */
+    protected void initAttrs(AttributeSet attrs) {
         TypedArray types = context.obtainStyledAttributes(attrs, R.styleable.WeatherView);
         int count = types.getIndexCount();
         for (int i = 0; i < count; i++) {
@@ -234,6 +262,9 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
                 highTXTColor = types.getColor(attr, HIGHTXTCOLOR);
             else if (attr == R.styleable.WeatherView_lowTxtColor)
                 lowTXTColor = types.getColor(attr, LOWTXTCOLOR);
+            else if (attr == R.styleable.WeatherView_todayHighTxtColor)
+                todayHighTxtColor = types.getColor(attr, HIGHTXTCOLOR);
+            else if (attr == R.styleable.WeatherView_todayLowTxtColor) ;
             else if (attr == R.styleable.WeatherView_lineColor)
                 lineColor = types.getColor(attr, -1);
             else if (attr == R.styleable.WeatherView_highLineColor)
@@ -250,12 +281,18 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
                 rightLowLineColor = types.getColor(attr, -1);
             else if (attr == R.styleable.WeatherView_haveMiddleLine)
                 haveMiddleLine = types.getBoolean(attr, false);
+            else if (attr == R.styleable.WeatherView_middleLineColor)
+                middleLineColor = types.getColor(attr, MIDDLE_LINE_COLOR);
+            else if (attr == R.styleable.WeatherView_middleLineStrokeWidth)
+                middleLineStrokeWidth = types.getDimensionPixelSize(attr, MIDDLE_LINE_STROKE_WIDTH);
             else if (attr == R.styleable.WeatherView_width)
                 width = types.getDimensionPixelSize(attr, -1);
             else if (attr == R.styleable.WeatherView_height)
                 height = types.getDimensionPixelSize(attr, -1);
             else if (attr == R.styleable.WeatherView_backgroundColor)
                 backgroundColor = types.getColor(attr, CANVASCOLOR);
+            else if (attr == R.styleable.WeatherView_istoday)
+                isToday = types.getBoolean(attr, false);
         }
         types.recycle();
     }
@@ -263,18 +300,20 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
     /**
      * 初始化所要用的三支画笔
      */
-    private void initPaints() {
+    protected void initPaints() {
         dotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         dotPaint.setStyle(Paint.Style.FILL);
-        dotPaint.setColor(HIGHDOTCOLOR);
+
 
         txtPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        txtPaint.setTextSize(txtSize);
         fontMetrics = txtPaint.getFontMetrics();
 
         linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         linePaint.setStyle(Paint.Style.STROKE);
-        linePaint.setStrokeWidth(LINEWIDTH);
+
+
+        middleLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        middleLinePaint.setStyle(Paint.Style.STROKE);
     }
 
     /**
@@ -288,6 +327,58 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         this.height = height;
     }
 
+    /**
+     * 是否需要中间线
+     *
+     * @param haveMiddleLine
+     */
+    public void setHaveMiddleLine(boolean haveMiddleLine) {
+        this.haveMiddleLine = haveMiddleLine;
+    }
+
+    /**
+     * set middle line params
+     *
+     * @param middleLineStrokeWidth
+     * @param middleLineColor
+     */
+    public void setMiddleLineParams(int middleLineStrokeWidth, int middleLineColor) {
+        this.middleLineStrokeWidth = middleLineStrokeWidth;
+        this.middleLineColor = middleLineColor;
+        setUpAttr();
+    }
+
+    /**
+     * 设置是否是当天
+     *
+     * @param isToday
+     */
+    public void setToday(boolean isToday) {
+        this.isToday = isToday;
+        setUpAttr();
+    }
+
+    public void setTodayParams(int todayDotRadiu, int todayDotColor, int todayTxtColor) {
+        setTodayParams(todayDotRadiu, todayDotColor, todayDotColor, todayTxtColor, todayTxtColor);
+    }
+
+    /**
+     * 设置当天温度的显示
+     *
+     * @param todayDotRadiu
+     * @param todayHighDotColor
+     * @param todayLowDotColor
+     * @param todayHighTxtColor
+     * @param todayLowTxtColor
+     */
+    public void setTodayParams(int todayDotRadiu, int todayHighDotColor, int todayLowDotColor, int todayHighTxtColor, int todayLowTxtColor) {
+        this.dotRadiu = this.todayDotRadiu = todayDotRadiu;
+        this.highDotColor = this.todayHighDotColor = todayHighDotColor;
+        this.lowDotColor = this.todayLowDotColor = todayLowDotColor;
+        this.highTXTColor = this.todayHighTxtColor = todayHighTxtColor;
+        this.lowTXTColor = this.todayLowTxtColor = todayLowTxtColor;
+        setUpAttr();
+    }
 
     /**
      * 设置画布背景色
@@ -326,23 +417,61 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
     }
 
     public void setDotParams(int dotRadiu, int dotColor) {
-        setDotParams(dotRadiu, dotRadiu, dotColor, dotColor);
+        setDotParams(dotRadiu, dotColor, dotColor);
+    }
+
+    public void setDotParams(int dotRadiu, int highDotColor, int lowDotColor) {
+        setDotParams(dotRadiu, dotRadiu, highDotColor, lowDotColor);
+    }
+
+    public void setDotParams(int dotRadiu, int todayDotRadiu, int highDotColor, int lowDotColor) {
+        setDotParams(dotRadiu, todayDotRadiu, highDotColor, lowDotColor, highDotColor, lowDotColor);
     }
 
     /**
      * 设置 dot 相关参数， px is default
      *
-     * @param dotRadiu      圆半径
-     * @param todayDotRadiu 当天圆半径
-     * @param highDotColor
-     * @param lowDotColor
+     * @param dotRadiu          圆半径
+     * @param todayDotRadiu     当天圆半径
+     * @param todayHighDotColor 当天高温圆点颜色
+     * @param todayLowDotColor  当天低温圆点颜色
+     * @param highDotColor      高温圆点颜色
+     * @param lowDotColor       低温圆点颜色
      */
-    public void setDotParams(int dotRadiu, int todayDotRadiu, int highDotColor, int lowDotColor) {
-
+    public void setDotParams(int dotRadiu, int todayDotRadiu, int todayHighDotColor, int todayLowDotColor, int highDotColor, int lowDotColor) {
+        this.dotRadiu = dotRadiu;
+        this.todayDotRadiu = todayDotRadiu;
+        this.todayHighDotColor = todayHighDotColor;
+        this.todayLowDotColor = todayLowDotColor;
+        this.highDotColor = highDotColor;
+        this.lowDotColor = lowDotColor;
+        setUpAttr();
     }
 
-    public void setDotParams(){
+    public void setLineParams(int lineStrokeWidth, int lineColor) {
+        setLineParams(lineStrokeWidth, lineColor, lineColor);
+    }
 
+    public void setLineParams(int lineStrokeWidth, int highLineColor, int lowLineColor) {
+        setLineParams(lineStrokeWidth, highLineColor, lowLineColor, highLineColor, lowLineColor);
+    }
+
+    /**
+     * 设置温度线的各种参数
+     *
+     * @param lineStrokeWidth
+     * @param leftHighLineColor
+     * @param leftLowLineColor
+     * @param rightHighLineColor
+     * @param rightLowLineColor
+     */
+    public void setLineParams(int lineStrokeWidth, int leftHighLineColor, int leftLowLineColor, int rightHighLineColor, int rightLowLineColor) {
+        this.lineStrokeWidth = lineStrokeWidth;
+        this.lineColor = this.highLineColor = this.leftHighLineColor = leftHighLineColor;
+        this.lowLineColor = this.leftLowLineColor = leftLowLineColor;
+        this.rightHighLineColor = rightHighLineColor;
+        this.rightLowLineColor = rightLowLineColor;
+        setUpAttr();
     }
 
 
@@ -357,7 +486,15 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         setMeasuredDimension(widthResult, heightResult);
     }
 
-    private int getSize(int size, int sizeMode, int type) {
+    /**
+     * 计算宽高
+     *
+     * @param size
+     * @param sizeMode
+     * @param type
+     * @return
+     */
+    protected int getSize(int size, int sizeMode, int type) {
         int result = -1;
         if (sizeMode == MeasureSpec.EXACTLY)
             result = size;
@@ -374,8 +511,8 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         return result;
     }
 
-    private int baseY, degreeHeight;
-    private int w, h;
+    protected int baseY, degreeHeight;
+    protected int w, h;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -388,11 +525,15 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
             return;
         }
 
-        //------------------------在绘制控件之前的必要数据 base data, 整个控件的绘制都是基于这几个数据---------------------------
 
         //宽高
         w = getWidth();
         h = getHeight();
+
+        // 画当天的中间线，墨迹天气的效果
+        drawMiddleLine(canvas);
+
+        //------------------------在绘制控件之前的必要数据 base data, 整个控件的绘制都是基于这几个数据---------------------------
 
         //baseY：代表的是 文字距离顶部/底部的距离 + 文字距离dot的距离 + 文字本身的高度
         baseY = txtToBorder + txtToDot + (int) (fontMetrics.descent - fontMetrics.ascent);
@@ -409,29 +550,68 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         Point[] tPoints = getTPoints(t);
 
         //dot
-        canvas.drawCircle(tPoints[0].x, tPoints[0].y, dotRadiu, dotPaint);
-        canvas.drawCircle(tPoints[1].x, tPoints[1].y, dotRadiu, dotPaint);
+        drawDots(canvas, tPoints);
 
         //txt
         Point[] txtBaseLinePoints = getTxtBaseLinePoint(t, tPoints);
-        canvas.drawText(t.getHighDegree() + "", txtBaseLinePoints[0].x, txtBaseLinePoints[0].y, txtPaint);
-        canvas.drawText(t.getLowDegree() + "", txtBaseLinePoints[1].x, txtBaseLinePoints[1].y, txtPaint);
+        drawTexts(canvas, t, txtBaseLinePoints);
 
         //只要 position >0 都需要画左边的连线
         if (position > 0) {
             T preT = datas.get(position - 1);
             Point[] leftPoints = getLeftPoints(tPoints, preT);
-            canvas.drawLine(tPoints[0].x, tPoints[0].y, leftPoints[0].x, leftPoints[0].y, linePaint);
-            canvas.drawLine(tPoints[1].x, tPoints[1].y, leftPoints[1].x, leftPoints[1].y, linePaint);
+            drawLines(canvas, tPoints, leftPoints, 0);
         }
 
         //只要 position 不是最后一个 都需要画右边的连线
         if (position < datas.size() - 1) {
             T nextT = datas.get(position + 1);
             Point[] rightPoints = getRightPoints(tPoints, nextT);
-            canvas.drawLine(tPoints[0].x, tPoints[0].y, rightPoints[0].x, rightPoints[0].y, linePaint);
-            canvas.drawLine(tPoints[1].x, tPoints[1].y, rightPoints[1].x, rightPoints[1].y, linePaint);
+            drawLines(canvas, tPoints, rightPoints, 1);
         }
+    }
+
+    protected void drawMiddleLine(Canvas canvas) {
+        if (haveMiddleLine) {
+            middleLinePaint.setColor(middleLineColor);
+            middleLinePaint.setStrokeWidth(middleLineStrokeWidth);
+            canvas.drawLine(w / 2, 0, w / 2, h, middleLinePaint);
+        }
+    }
+
+    protected void drawDots(Canvas canvas, Point[] tPoints) {
+        dotPaint.setColor(highDotColor);
+        canvas.drawCircle(tPoints[0].x, tPoints[0].y, dotRadiu, dotPaint);
+        dotPaint.setColor(lowDotColor);
+        canvas.drawCircle(tPoints[1].x, tPoints[1].y, dotRadiu, dotPaint);
+    }
+
+    protected void drawTexts(Canvas canvas, T t, Point[] txtBaseLinePoints) {
+        txtPaint.setColor(highTXTColor);
+        canvas.drawText(t.getHighDegree() + "", txtBaseLinePoints[0].x, txtBaseLinePoints[0].y, txtPaint);
+        txtPaint.setColor(lowTXTColor);
+        canvas.drawText(t.getLowDegree() + "", txtBaseLinePoints[1].x, txtBaseLinePoints[1].y, txtPaint);
+    }
+
+    /**
+     * 跟据坐标点画温度线
+     *
+     * @param canvas
+     * @param tPoints
+     * @param points
+     */
+    protected void drawLines(Canvas canvas, Point[] tPoints, Point[] points, int direct) {
+        linePaint.setStrokeWidth(lineStrokeWidth);
+        if (direct == 0)
+            linePaint.setColor(leftHighLineColor);
+        else
+            linePaint.setColor(rightHighLineColor);
+        canvas.drawLine(tPoints[0].x, tPoints[0].y, points[0].x, points[0].y, linePaint);
+        if (direct == 0)
+            linePaint.setColor(leftLowLineColor);
+        else
+            linePaint.setColor(rightLowLineColor);
+        canvas.drawLine(tPoints[1].x, tPoints[1].y, points[1].x, points[1].y, linePaint);
     }
 
     /**
@@ -440,7 +620,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
      * @param t
      * @return
      */
-    private Point[] getTPoints(T t) {
+    protected Point[] getTPoints(T t) {
         Point[] points = new Point[2];
         int highY = baseY + dotRadiu / 2 + (highestDegree - t.getHighDegree()) * degreeHeight;
         Point highPoint = new Point(w / 2, highY);
@@ -458,7 +638,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
      * @param preT
      * @return
      */
-    private Point[] getLeftPoints(Point[] tPoints, T preT) {
+    protected Point[] getLeftPoints(Point[] tPoints, T preT) {
         Point[] points = new Point[2];
         Point[] preTPoints = getTPoints(preT);
         points[0] = new Point(0, (tPoints[0].y + preTPoints[0].y) / 2);
@@ -473,7 +653,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
      * @param nextT
      * @return
      */
-    private Point[] getRightPoints(Point[] tPoints, T nextT) {
+    protected Point[] getRightPoints(Point[] tPoints, T nextT) {
         Point[] points = new Point[2];
         Point[] nextTPoints = getTPoints(nextT);
         points[0] = new Point(w, (tPoints[0].y + nextTPoints[0].y) / 2);
@@ -488,7 +668,8 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
      * @param tPoints
      * @return
      */
-    private Point[] getTxtBaseLinePoint(T t, Point[] tPoints) {
+    protected Point[] getTxtBaseLinePoint(T t, Point[] tPoints) {
+        txtPaint.setTextSize(txtSize);
         Point[] baseLinePoints = new Point[2];
         Point middelHighPoint = tPoints[0];
         int disY = dotRadiu / 2 + txtToDot;
@@ -496,7 +677,8 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         int highBaseLineX = (w - (int) txtPaint.measureText(t.getHighDegree() + "")) / 2;
         Point highBaseLinePoint = new Point(highBaseLineX, highBaseLineY);
         Point middleLowPoint = tPoints[1];
-        int lowBaseLineY = middleLowPoint.y + disY + Math.abs((int) (fontMetrics.descent + fontMetrics.ascent));
+        int textHeight = Math.abs((int) (fontMetrics.bottom - fontMetrics.top));
+        int lowBaseLineY = middleLowPoint.y + disY + txtToDot + textHeight;
         int lowBaseLineX = (w - (int) txtPaint.measureText(t.getLowDegree() + "")) / 2;
         Point lowBaseLinePoint = new Point(lowBaseLineX, lowBaseLineY);
         baseLinePoints[0] = highBaseLinePoint;
@@ -505,11 +687,11 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
     }
 
 
-    private int dip2px(float dip) {
+    protected int dip2px(float dip) {
         return (int) (dip * dm.density + 0.5);
     }
 
-    private int sp2px(float spValue) {
+    protected int sp2px(float spValue) {
         return (int) (spValue * dm.scaledDensity + 0.5f);
     }
 
