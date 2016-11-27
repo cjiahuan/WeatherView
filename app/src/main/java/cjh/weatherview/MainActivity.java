@@ -16,8 +16,10 @@ import cjh.weatherviewlibarary.WeatherView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView, recyclerView1;
+    private RecyclerView recyclerView2, recyclerView, recyclerView1;
     DisplayMetrics dm;
+
+    private WeatherView<MyWeatherData> weatherView1, weatherView2, weatherView3;
 
     public static MainActivity instance;
 
@@ -31,20 +33,36 @@ public class MainActivity extends AppCompatActivity {
 
         int mScreenWidth = dm.widthPixels;
 
+        List<MyWeatherData> datas = new ArrayList<>();
+        datas.add(new MyWeatherData(0, -8, "昨天"));
+        datas.add(new MyWeatherData(3, -6, "今天"));
+        datas.add(new MyWeatherData(4, -6, "星期一"));
+        datas.add(new MyWeatherData(4, -5, "星期二"));
+        datas.add(new MyWeatherData(6, -4, "星期三"));
+        datas.add(new MyWeatherData(0, -8, "星期四"));
+        datas.add(new MyWeatherData(3, -6, "星期五"));
+        datas.add(new MyWeatherData(4, -6, "星期六"));
+        datas.add(new MyWeatherData(4, -5, "星期日"));
+        datas.add(new MyWeatherData(6, -5, "星期一"));
+        datas.add(new MyWeatherData(3, -3, "星期二"));
+        datas.add(new MyWeatherData(8, -8, "星期三"));
+        datas.add(new MyWeatherData(0, -8, "星期四"));
+        datas.add(new MyWeatherData(3, -6, "星期五"));
+        datas.add(new MyWeatherData(4, -6, "星期六"));
+
+        recyclerView2 = (RecyclerView) findViewById(R.id.recyclerView2);
+        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this);
+        linearLayoutManager2.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView2.setLayoutManager(linearLayoutManager2);
+        recyclerView2.setAdapter(new CompleteShowAdapter(this, datas, 8, -8, mScreenWidth / 6));
+
+
         //default WeatherView
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        List<MyWeatherData> datas = new ArrayList<>();
-        datas.add(new MyWeatherData(0, -8));
-        datas.add(new MyWeatherData(3, -6));
-        datas.add(new MyWeatherData(4, -6));
-        datas.add(new MyWeatherData(4, -5));
-        datas.add(new MyWeatherData(6, -4));
-        datas.add(new MyWeatherData(6, -5));
-        datas.add(new MyWeatherData(3, -3));
-        datas.add(new MyWeatherData(8, -8));
+
         recyclerView.setAdapter(new MyAdapter(this, datas, 8, -8, mScreenWidth / 6, MyAdapter.DEFAULT_WEATHERVIEW));
 
 
@@ -53,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView1.setLayoutManager(linearLayoutManager1);
         recyclerView1.setAdapter(new MyAdapter(this, datas, 8, -8, mScreenWidth / 6, MyAdapter.SETTING_WEATHERVIEW));
+
+        weatherView1 = (WeatherView<MyWeatherData>) findViewById(R.id.weatherView1);
+        weatherView2 = (WeatherView<MyWeatherData>) findViewById(R.id.weatherView2);
+        weatherView3 = (WeatherView<MyWeatherData>) findViewById(R.id.weatherView3);
+        weatherView1.setDatas(datas, 8, -8, 0);
+        weatherView2.setDatas(datas, 8, -8, 1);
+        weatherView3.setDatas(datas, 8, -8, 2);
     }
 
 

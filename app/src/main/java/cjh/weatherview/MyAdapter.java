@@ -50,7 +50,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.weatherView.setWH(weatherViewW, weatherViewW * 2);
             holder.weatherView.setBackgroundColor(Color.parseColor("#22000000"));
             holder.weatherView.setDotParams(MainActivity.instance.dip2px(3), Color.parseColor("#FFFFFF"), Color.parseColor("#00FF00"));
-            holder.weatherView.setTxtParams(MainActivity.instance.sp2px(12), Color.parseColor("#00ff00"), MainActivity.instance.dip2px(8), MainActivity.instance.dip2px(5));
+            holder.weatherView.setTxtParams(MainActivity.instance.sp2px(12), Color.parseColor("#00ff00"), MainActivity.instance.dip2px(8), MainActivity.instance.dip2px(10));
             holder.weatherView.setLineParams(MainActivity.instance.dip2px(1), Color.YELLOW, Color.parseColor("#5F9EA0"));
             if (position == 1) {
                 holder.weatherView.setToday(true);

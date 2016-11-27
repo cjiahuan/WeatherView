@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/date1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="昨天"
+        android:textColor="#333333"
+        android:textSize="14sp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/date2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="11/26"
+        android:textColor="#333333"
+        android:textSize="10sp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="霾"
+        android:textColor="#333333"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/org3_ww45" />
+
+    <cjh.weatherviewlibarary.WeatherView
+        android:id="@+id/weatherView"
+        android:layout_width="60dp"
+        android:layout_height="120dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="3dp"
+        app:dotColor="@android:color/white"
+        app:dotRadiu="2dp"
+        app:highLineColor="@android:color/holo_purple"
+        app:lowLineColor="@android:color/darker_gray"
+        app:txtColor="@android:color/black"
+        app:txtSize="12sp"
+        app:txtToBorder="10dp"
+        app:txtToDot="3dp" />
+
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/org3_ww45" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="霾"
+        android:textColor="#333333"
+        android:textSize="12sp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="北风"
+        android:textColor="#333333"
+        android:textSize="12sp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="3级"
+        android:textColor="#333333"
+        android:textSize="12sp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/shape_serious"
+        android:padding="3dp"
+        android:text="严重"
+        android:textColor="#fff"
+        android:textSize="12sp" />
+
+
+</LinearLayout>

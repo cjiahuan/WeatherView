@@ -12,10 +12,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp">
 
         </android.support.v7.widget.RecyclerView>
 
@@ -24,9 +33,71 @@
             android:id="@+id/recyclerView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="40dp">
 
         </android.support.v7.widget.RecyclerView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <cjh.weatherviewlibarary.WeatherView
+                android:id="@+id/weatherView1"
+                android:layout_width="80dp"
+                android:layout_height="160dp"
+                app:backgroundColor="@color/colorAccent"
+                app:dotColor="@android:color/white"
+                app:dotRadiu="5dp"
+                app:lineColor="@color/colorPrimaryDark"
+                app:lineStrokWidth="1dp"
+                app:todayDotRadiu="8dp"
+                app:todayHighTxtColor="@android:color/black"
+                app:todayLowTxtColor="@android:color/black"
+                app:txtColor="@color/colorPrimary"
+                app:txtSize="14sp"
+                app:txtToBorder="10dp"
+                app:txtToDot="9dp" />
+
+            <cjh.weatherviewlibarary.WeatherView
+                android:id="@+id/weatherView2"
+                android:layout_width="80dp"
+                android:layout_height="160dp"
+                app:backgroundColor="@color/colorAccent"
+                app:dotColor="@android:color/white"
+                app:dotRadiu="5dp"
+                app:highTxtColor="@color/colorPrimaryDark"
+                app:istoday="true"
+                app:lineColor="@color/colorPrimaryDark"
+                app:lineStrokWidth="1dp"
+                app:todayHighDotColor="#228989"
+                app:todayHighTxtColor="@android:color/black"
+                app:todayLowDotColor="#EAC100"
+                app:todayLowTxtColor="@android:color/black"
+                app:txtColor="@color/colorPrimary"
+                app:txtSize="14sp"
+                app:txtToBorder="10dp"
+                app:txtToDot="9dp" />
+
+            <cjh.weatherviewlibarary.WeatherView
+                android:id="@+id/weatherView3"
+                android:layout_width="80dp"
+                android:layout_height="160dp"
+                app:backgroundColor="@color/colorAccent"
+                app:dotColor="@android:color/white"
+                app:dotRadiu="5dp"
+                app:lineColor="@color/colorPrimaryDark"
+                app:lineStrokWidth="1dp"
+                app:todayDotRadiu="8dp"
+                app:todayHighTxtColor="@android:color/black"
+                app:todayLowTxtColor="@android:color/black"
+                app:txtColor="@color/colorPrimary"
+                app:txtSize="14sp"
+                app:txtToBorder="10dp"
+                app:txtToDot="9dp" />
+
+        </LinearLayout>
 
 
     </LinearLayout>

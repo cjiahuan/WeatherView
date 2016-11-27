@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -190,7 +191,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
             txtSize = sp2px(TXTSIZE);
         if (dotRadiu == -1)
             dotRadiu = dip2px(WEADOTRADIU);
-        if (todayDotRadiu != -1)
+        if (todayDotRadiu == -1)
             todayDotRadiu = dotRadiu;
         if (lineStrokeWidth == -1)
             lineStrokeWidth = dip2px(LINEWIDTH);
@@ -306,7 +307,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
 
 
         txtPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fontMetrics = txtPaint.getFontMetrics();
+
 
         linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         linePaint.setStyle(Paint.Style.STROKE);
@@ -525,6 +526,8 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
             return;
         }
 
+        txtPaint.setTextSize(txtSize);
+        fontMetrics = txtPaint.getFontMetrics();
 
         //宽高
         w = getWidth();
@@ -536,7 +539,7 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         //------------------------在绘制控件之前的必要数据 base data, 整个控件的绘制都是基于这几个数据---------------------------
 
         //baseY：代表的是 文字距离顶部/底部的距离 + 文字距离dot的距离 + 文字本身的高度
-        baseY = txtToBorder + txtToDot + (int) (fontMetrics.descent - fontMetrics.ascent);
+        baseY = txtToBorder + txtToDot + (int) (fontMetrics.bottom - fontMetrics.ascent);
 
         //最重要的一个数据 baseHeight: 可以看到 h - 2*baseY 其实就是在计算真实可用的温度线的高度区间
         int baseHeight = h - 2 * baseY;
@@ -669,7 +672,6 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
      * @return
      */
     protected Point[] getTxtBaseLinePoint(T t, Point[] tPoints) {
-        txtPaint.setTextSize(txtSize);
         Point[] baseLinePoints = new Point[2];
         Point middelHighPoint = tPoints[0];
         int disY = dotRadiu / 2 + txtToDot;
@@ -677,8 +679,8 @@ public class WeatherView<T extends IBaseWeatherData> extends View {
         int highBaseLineX = (w - (int) txtPaint.measureText(t.getHighDegree() + "")) / 2;
         Point highBaseLinePoint = new Point(highBaseLineX, highBaseLineY);
         Point middleLowPoint = tPoints[1];
-        int textHeight = Math.abs((int) (fontMetrics.bottom - fontMetrics.top));
-        int lowBaseLineY = middleLowPoint.y + disY + txtToDot + textHeight;
+        int textHeight = Math.abs((int) (fontMetrics.bottom - fontMetrics.ascent));
+        int lowBaseLineY = middleLowPoint.y + disY + textHeight / 3 * 2;
         int lowBaseLineX = (w - (int) txtPaint.measureText(t.getLowDegree() + "")) / 2;
         Point lowBaseLinePoint = new Point(lowBaseLineX, lowBaseLineY);
         baseLinePoints[0] = highBaseLinePoint;

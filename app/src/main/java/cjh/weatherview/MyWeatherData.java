@@ -10,13 +10,15 @@ public class MyWeatherData implements IBaseWeatherData {
 
     public int highDegree;
     public int lowDegree;
+    public String date;
 
     public MyWeatherData() {
     }
 
-    public MyWeatherData(int highDegree, int lowDegree) {
+    public MyWeatherData(int highDegree, int lowDegree, String date) {
         this.highDegree = highDegree;
         this.lowDegree = lowDegree;
+        this.date = date;
     }
 
     @Override
