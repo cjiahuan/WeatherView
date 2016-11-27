@@ -207,7 +207,13 @@ second step: call WeatherView's method -- setDatas
 ```
 
 # important
-```
 only setData() invalidates WeatherView, if you hope other methods can invalidate WeatherView.
- You can create classes that extend WeatherView, and rewrite methods, all the WeatherView's methods are public and protected.
+You can create classes that extend WeatherView, and rewrite methods, all the WeatherView's methods are public and protected.
+like this:
+
+```
+public void setWH(){
+    super.setWH();
+    postInvalidate();
+}
 ```
