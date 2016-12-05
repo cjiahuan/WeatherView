@@ -217,3 +217,5 @@ public void setWH(){
     postInvalidate();
 }
 ```
+
+http://blog.csdn.net/cjh_android/article/details/53289347
